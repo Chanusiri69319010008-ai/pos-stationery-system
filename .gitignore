@@ -1,0 +1,12 @@
+.env
+.env.local
+.env.*.local
+node_modules/
+dist/
+build/
+coverage/
+_backup/
+
+# environment ของ Bruno มี URL และคีย์ของโปรเจกต์จริง ให้แต่ละเครื่องคัดลอกจาก
+# bruno/environments/local.example.bru เอง
+bruno/environments/local.bru
