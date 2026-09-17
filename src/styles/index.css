@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bone text-ink font-sans;
+    font-size: 14px; /* §8 ขนาดต่ำสุดของเนื้อความ 14px */
+  }
+
+  /* ช่องกรอกทั้งระบบ: เส้นขอบบาง มุมโค้ง 4px ไม่มีเงา */
+  input,
+  select,
+  textarea {
+    @apply bg-paper border border-royal/30 rounded px-3 text-ink;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply outline-none border-royal ring-1 ring-royal/40;
+  }
+
+  table {
+    @apply w-full border-collapse;
+  }
+}
+
+@layer components {
+  /* การ์ด/แผงเนื้อหา: พื้น Paper เส้นขอบบาง ไม่ใช้เงา (§8) */
+  .panel {
+    @apply bg-paper border border-royal/20 rounded;
+  }
+
+  .page-title {
+    @apply font-display text-2xl font-bold text-royal tracking-wide;
+  }
+
+  .num {
+    @apply font-mono tabular-nums;
+  }
+}
+
+/* =====================================================================
+   ใบเสร็จ 58 มม. — พรีวิวบนจอและสั่งพิมพ์ผ่านเบราว์เซอร์ (§5 หน้า 2)
+   ===================================================================== */
+.receipt-58 {
+  width: 58mm;
+  padding: 3mm;
+  background: #ffffff;
+  color: #000000;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+@media print {
+  @page {
+    size: 58mm auto;
+    margin: 0;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  /* พิมพ์เฉพาะใบเสร็จ ส่วนอื่นซ่อนทั้งหมด */
+  body * {
+    visibility: hidden;
+  }
+
+  .receipt-58,
+  .receipt-58 * {
+    visibility: visible;
+  }
+
+  .receipt-58 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 58mm;
+    border: none;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
