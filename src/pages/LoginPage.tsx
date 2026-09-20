@@ -1,11 +1,17 @@
 // @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  
   const canvasRef = useRef(null);
+  const navigate = useNavigate();
 
+  // Particle Canvas Background Animation
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -17,12 +23,13 @@ export function LoginPage() {
     let height = (canvas.height = window.innerHeight);
 
     const handleResize = () => {
+      if (!canvas) return;
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     };
     window.addEventListener('resize', handleResize);
 
-    const particles = Array.from({ length: 50 }, () => ({
+    const particles = Array.from({ length: 60 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
       vx: (Math.random() - 0.5) * 0.8,
@@ -59,8 +66,34 @@ export function LoginPage() {
     };
   }, []);
 
+  // Standardized Auth Submit Handler
   const handleSubmit = (e) => {
     e.preventDefault();
+    setErrorMsg('');
+    setLoading(true);
+
+    // จำลองการตรวจสอบการกรอกข้อมูลพื้นฐาน
+    if (!email || !password) {
+      setErrorMsg('กรุณากรอกอีเมลและรหัสผ่านให้ครบถ้วน');
+      setLoading(false);
+      return;
+    }
+
+    setTimeout(() => {
+      // บันทึก User Session ลงใน LocalStorage ตามหลักปฏิบัติของ Web App Auth
+      const userSession = {
+        email: email,
+        token: 'auth_token_' + Date.now(),
+        role: email.includes('owner') ? 'owner' : 'staff',
+        loggedInAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem('pos_user_session', JSON.stringify(userSession));
+      setLoading(false);
+
+      // Redirect ผู้ใช้เข้าสู่ระบบ
+      navigate('/', { replace: true });
+    }, 600);
   };
 
   return (
@@ -73,6 +106,12 @@ export function LoginPage() {
           <p className="text-sm text-slate-300">ระบบขายหน้าร้านและจัดการสต็อก</p>
         </div>
 
+        {errorMsg && (
+          <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm text-center">
+            {errorMsg}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-slate-200 mb-2">อีเมล</label>
@@ -81,7 +120,7 @@ export function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-              placeholder="name@company.com"
+              placeholder="owner@aunchan.local"
               required
             />
           </div>
@@ -100,9 +139,20 @@ export function LoginPage() {
 
           <button
             type="submit"
-            className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg shadow-lg hover:shadow-indigo-500/30 transition-all duration-200 active:scale-[0.98]"
+            disabled={loading}
+            className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg shadow-lg hover:shadow-indigo-500/30 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center"
           >
-            เข้าสู่ระบบ
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                กำลังเข้าสู่ระบบ...
+              </span>
+            ) : (
+              'เข้าสู่ระบบ'
+            )}
           </button>
         </form>
       </div>
