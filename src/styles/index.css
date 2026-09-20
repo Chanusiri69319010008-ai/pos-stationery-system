@@ -43,6 +43,96 @@
   .num {
     @apply font-mono tabular-nums;
   }
+
+  /* -------------------------------------------------------------------
+     หน้าเข้าสู่ระบบเท่านั้น — การ์ดกระจกฝ้าให้เห็นอนุภาคด้านหลังลาง ๆ
+     §8 ห้ามใช้เงากับแผงเนื้อหาในหน้าทำงาน แต่หน้า login ไม่ใช่หน้าทำงาน
+     และไม่มีตัวเลขเงินให้อ่าน จึงยอมให้มีเงานุ่ม ๆ ได้
+     ------------------------------------------------------------------- */
+  .glass-panel {
+    background: rgba(252, 250, 246, 0.72);
+    backdrop-filter: blur(14px) saturate(115%);
+    -webkit-backdrop-filter: blur(14px) saturate(115%);
+    @apply border border-paper/70 rounded;
+    box-shadow:
+      0 1px 0 rgba(252, 250, 246, 0.9) inset,
+      0 18px 48px -24px rgba(22, 38, 96, 0.4);
+  }
+
+  /* เบราว์เซอร์ที่ไม่รองรับ backdrop-filter ให้ทึบไปเลย จะได้ยังอ่านออก */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-panel {
+      background: rgba(252, 250, 246, 0.96);
+    }
+  }
+}
+
+/* =====================================================================
+   อนิเมชันตอนเปิดหน้าเข้าสู่ระบบ
+   ใช้ CSS ล้วนเพื่อไม่ต้องเพิ่ม dependency ให้ bundle
+   ===================================================================== */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lift-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-rise-in {
+  opacity: 0;
+  animation: rise-in 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-lift-in {
+  opacity: 0;
+  animation: lift-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ปุ่ม/ช่องกรอกบนหน้า login: ย่อ-ขยายนิดเดียวตอนชี้และตอนกด */
+.press-scale {
+  transition:
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.press-scale:hover:not(:disabled) {
+  transform: scale(1.02);
+}
+
+.press-scale:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise-in,
+  .animate-lift-in {
+    opacity: 1;
+    animation: none;
+  }
+
+  .press-scale,
+  .press-scale:hover:not(:disabled),
+  .press-scale:active:not(:disabled) {
+    transform: none;
+    transition: none;
+  }
 }
 
 /* =====================================================================
