@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Integrated Lightweight Particle Canvas
-const ParticleBackground = () => {
+export default function LoginPage() {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -21,16 +22,21 @@ const ParticleBackground = () => {
     };
     window.addEventListener('resize', handleResize);
 
-    const particles: Array<{ x: number; y: number; vx: number; vy: number; size: number }> = [];
-    for (let i = 0; i < 60; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8,
-        size: Math.random() * 2 + 1,
-      });
-    }
+    type Particle = {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      size: number;
+    };
+
+    const particles: Particle[] = Array.from({ length: 50 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: (Math.random() - 0.5) * 0.8,
+      size: Math.random() * 2 + 1,
+    }));
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
@@ -61,23 +67,14 @@ const ParticleBackground = () => {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />;
-};
-
-export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
 
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-slate-900">
-      {/* Background Particles */}
-      <ParticleBackground />
+      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
 
-      {/* Login Card */}
       <div className="relative z-10 w-full max-w-md p-8 bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 text-white m-4">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Aunchan</h1>
@@ -90,7 +87,7 @@ export default function LoginPage() {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
               placeholder="name@company.com"
               required
@@ -102,7 +99,7 @@ export default function LoginPage() {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
               placeholder="••••••••"
               required
