@@ -1,6 +1,5 @@
 // @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export function LoginPage() {
   const [email, setEmail] = useState('owner@aunchan.local');
@@ -9,7 +8,6 @@ export function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   
   const canvasRef = useRef(null);
-  const navigate = useNavigate();
 
   // Particle Engine
   useEffect(() => {
@@ -40,11 +38,9 @@ export function LoginPage() {
     const render = () => {
       ctx.clearRect(0, 0, width, height);
       
-      // Draw Dark Background explicitly on Canvas
       ctx.fillStyle = '#0f172a';
       ctx.fillRect(0, 0, width, height);
 
-      // Render Floating Particles
       ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
       particles.forEach((p) => {
         p.x += p.vx;
@@ -90,12 +86,15 @@ export function LoginPage() {
         loggedInAt: new Date().toISOString()
       };
       
+      // บันทึก Session ลง LocalStorage เพื่อยึดสถานะการเข้าสู่ระบบ
       localStorage.setItem('pos_user_session', JSON.stringify(userSession));
+      localStorage.setItem('isAuthenticated', 'true');
+      
       setLoading(false);
       
-      // Redirect to POS Main Page
-      navigate('/', { replace: true });
-    }, 500);
+      // บังคับเปลี่ยนหน้าไปยัง Dashboard/หน้าหลักโดยตรง ไม่ติด Loop Guard ใน SPA Router
+      window.location.href = '/';
+    }, 400);
   };
 
   return (
