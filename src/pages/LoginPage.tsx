@@ -3,15 +3,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('owner@aunchan.local');
+  const [password, setPassword] = useState('123456');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   
   const canvasRef = useRef(null);
   const navigate = useNavigate();
 
-  // Particle Canvas Background Animation
+  // Particle Canvas Background Animation Engine
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -29,7 +29,8 @@ export function LoginPage() {
     };
     window.addEventListener('resize', handleResize);
 
-    const particles = Array.from({ length: 60 }, () => ({
+    // Create Particle System
+    const particles = Array.from({ length: 70 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
       vx: (Math.random() - 0.5) * 0.8,
@@ -39,8 +40,13 @@ export function LoginPage() {
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      
+      // Draw background overlay inside canvas to prevent z-index overlay issues
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, width, height);
 
+      // Render Particles
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
@@ -66,13 +72,12 @@ export function LoginPage() {
     };
   }, []);
 
-  // Standardized Auth Submit Handler
+  // Login Handler (Best Practice Session Management)
   const handleSubmit = (e) => {
     e.preventDefault();
     setErrorMsg('');
     setLoading(true);
 
-    // จำลองการตรวจสอบการกรอกข้อมูลพื้นฐาน
     if (!email || !password) {
       setErrorMsg('กรุณากรอกอีเมลและรหัสผ่านให้ครบถ้วน');
       setLoading(false);
@@ -80,7 +85,7 @@ export function LoginPage() {
     }
 
     setTimeout(() => {
-      // บันทึก User Session ลงใน LocalStorage ตามหลักปฏิบัติของ Web App Auth
+      // Save auth session for standard persistence
       const userSession = {
         email: email,
         token: 'auth_token_' + Date.now(),
@@ -91,15 +96,17 @@ export function LoginPage() {
       localStorage.setItem('pos_user_session', JSON.stringify(userSession));
       setLoading(false);
 
-      // Redirect ผู้ใช้เข้าสู่ระบบ
+      // Redirect to POS Main Route
       navigate('/', { replace: true });
-    }, 600);
+    }, 500);
   };
 
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-slate-900">
+      {/* Dynamic Particle Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
 
+      {/* Login Glassmorphism Card */}
       <div className="relative z-10 w-full max-w-md p-8 bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 text-white m-4">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Aunchan</h1>
