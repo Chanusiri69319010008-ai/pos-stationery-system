@@ -11,7 +11,7 @@ export function LoginPage() {
   const canvasRef = useRef(null);
   const navigate = useNavigate();
 
-  // Particle Canvas Background Animation Engine
+  // Particle Engine
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -29,8 +29,7 @@ export function LoginPage() {
     };
     window.addEventListener('resize', handleResize);
 
-    // Create Particle System
-    const particles = Array.from({ length: 70 }, () => ({
+    const particles = Array.from({ length: 80 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
       vx: (Math.random() - 0.5) * 0.8,
@@ -41,12 +40,12 @@ export function LoginPage() {
     const render = () => {
       ctx.clearRect(0, 0, width, height);
       
-      // Draw background overlay inside canvas to prevent z-index overlay issues
+      // Draw Dark Background explicitly on Canvas
       ctx.fillStyle = '#0f172a';
       ctx.fillRect(0, 0, width, height);
 
-      // Render Particles
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      // Render Floating Particles
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
@@ -72,20 +71,18 @@ export function LoginPage() {
     };
   }, []);
 
-  // Login Handler (Best Practice Session Management)
   const handleSubmit = (e) => {
     e.preventDefault();
     setErrorMsg('');
     setLoading(true);
 
     if (!email || !password) {
-      setErrorMsg('กรุณากรอกอีเมลและรหัสผ่านให้ครบถ้วน');
+      setErrorMsg('กรุณากรอกข้อมูลให้ครบถ้วน');
       setLoading(false);
       return;
     }
 
     setTimeout(() => {
-      // Save auth session for standard persistence
       const userSession = {
         email: email,
         token: 'auth_token_' + Date.now(),
@@ -95,50 +92,50 @@ export function LoginPage() {
       
       localStorage.setItem('pos_user_session', JSON.stringify(userSession));
       setLoading(false);
-
-      // Redirect to POS Main Route
+      
+      // Redirect to POS Main Page
       navigate('/', { replace: true });
     }, 500);
   };
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-slate-900">
-      {/* Dynamic Particle Canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
+    <div style={{ position: 'fixed', inset: 0, width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', zIndex: 99999 }}>
+      {/* Dynamic Background Canvas */}
+      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }} />
 
-      {/* Login Glassmorphism Card */}
-      <div className="relative z-10 w-full max-w-md p-8 bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 text-white m-4">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Aunchan</h1>
-          <p className="text-sm text-slate-300">ระบบขายหน้าร้านและจัดการสต็อก</p>
+      {/* Login Card */}
+      <div style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: '400px', padding: '32px', backgroundColor: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(12px)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.2)', color: '#ffffff', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', margin: '16px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#ffffff', margin: '0 0 8px 0' }}>Aunchan</h1>
+          <p style={{ fontSize: '14px', color: '#cbd5e1', margin: 0 }}>ระบบขายหน้าร้านและจัดการสต็อก</p>
         </div>
 
         {errorMsg && (
-          <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm text-center">
+          <div style={{ marginBottom: '16px', padding: '12px', backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.5)', borderRadius: '8px', color: '#fca5a5', fontSize: '14px', textAlign: 'center' }}>
             {errorMsg}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
-            <label className="block text-sm font-medium text-slate-200 mb-2">อีเมล</label>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#e2e8f0', marginBottom: '8px' }}>อีเมล</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+              style={{ width: '100%', padding: '12px 16px', backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
               placeholder="owner@aunchan.local"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-200 mb-2">รหัสผ่าน</label>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#e2e8f0', marginBottom: '8px' }}>รหัสผ่าน</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+              style={{ width: '100%', padding: '12px 16px', backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
               placeholder="••••••••"
               required
             />
@@ -147,19 +144,9 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg shadow-lg hover:shadow-indigo-500/30 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center"
+            style={{ width: '100%', padding: '12px 16px', backgroundColor: '#4f46e5', border: 'none', borderRadius: '8px', color: '#ffffff', fontWeight: '600', cursor: 'pointer', transition: 'background-color 0.2s', marginTop: '8px' }}
           >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                </svg>
-                กำลังเข้าสู่ระบบ...
-              </span>
-            ) : (
-              'เข้าสู่ระบบ'
-            )}
+            {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
           </button>
         </form>
       </div>
